@@ -1,4 +1,4 @@
-module go-academy/string-display
+module go-academy/request-info
 
 go 1.23.2
 
