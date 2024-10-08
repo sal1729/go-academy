@@ -3,16 +3,10 @@ package utils
 import (
 	"bufio"
 	"fmt"
-	"os"
 	"strings"
 )
 
-type StringReader interface {
-	ReadString()
-}
-
-func RequestInput(request string) (string, error) {
-	reader := bufio.NewReader(os.Stdin)
+func RequestInput(request string, reader *bufio.Reader) (string, error) {
 	fmt.Printf(request)
 
 	input, readErr := reader.ReadString('\n')
@@ -23,11 +17,11 @@ func RequestInput(request string) (string, error) {
 	return strings.TrimSpace(input), nil
 }
 
-func RequestInputs(requests []string) ([]string, error) {
+func RequestInputs(requests []string, reader *bufio.Reader) ([]string, error) {
 	var inputs []string
 
 	for _, request := range requests {
-		input, readErr := RequestInput(request)
+		input, readErr := RequestInput(request, reader)
 		if readErr != nil {
 			return nil, readErr
 		}
