@@ -4,10 +4,9 @@ import (
 	"math/rand"
 )
 
-// TODO Write a multi-case test
-func rollOutcome(roll [2]int) string {
+func rollOutcome(rollSum int) string {
 	// switch on the roll values
-	switch roll[0] + roll[1] {
+	switch rollSum {
 	case 2:
 		return "SNAKE-EYES-CRAPS"
 	case 3, 12:
@@ -21,5 +20,5 @@ func rollOutcome(roll [2]int) string {
 
 func RollDicePair() ([2]int, string) {
 	roll := [2]int{rand.Intn(6) + 1, rand.Intn(6) + 1}
-	return roll, rollOutcome(roll)
+	return roll, rollOutcome(roll[0] + roll[1])
 }
