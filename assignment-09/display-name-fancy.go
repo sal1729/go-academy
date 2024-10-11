@@ -36,8 +36,5 @@ func main() {
 		LastName:   inputs[2],
 	}
 
-	// Display the full-name : <full-name>, middle-name : <middle-name> and surname : <surname> on 3 separate lines.
-	fmt.Printf("full-name: %s %s %s\n", name.FirstName, name.MiddleName, name.LastName)
-	fmt.Printf("middle-name: %s\n", name.MiddleName)
-	fmt.Printf("surname: %s\n", name.LastName)
+	fmt.Println(name)
 }

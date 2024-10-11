@@ -22,7 +22,8 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	inputs, _ := utils.RequestInputs(requests, reader)
 
-	// TODO Again, more terrible error handling here
+	// TODO Again, zero error handling here. Bad stuff happens if we pass illegal months/days
+	// I did a bunch of dob error handling later though...
 	year, _ := strconv.Atoi(inputs[0])
 	month, _ := strconv.Atoi(inputs[1])
 	day, _ := strconv.Atoi(inputs[2])
@@ -34,6 +35,6 @@ func main() {
 	}
 
 	birthday := time.Date(dob.Year, dob.Month, dob.Day, 0, 0, 0, 0, time.UTC)
-	age := bbAge.Age(birthday)
+	age := bbAge.Age(birthday) //
 	fmt.Println("Age: ", age)
 }

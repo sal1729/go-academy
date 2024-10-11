@@ -28,9 +28,9 @@ func main() {
 
 	minVal := 1
 	maxVal := 10
-	numCheckResponse, numCheckErr := utils.NumberChecker(input[0], minVal, maxVal)
+	numCheckResponse, number, numCheckErr := utils.NumberChecker(input[0], minVal, maxVal)
 	if numCheckErr != nil {
 		log.Fatal(numCheckErr)
 	}
-	fmt.Println(numCheckResponse)
+	fmt.Println(number, numCheckResponse)
 }

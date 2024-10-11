@@ -8,11 +8,15 @@ import (
 	"time"
 )
 
-// Maybe a types file isn't the way to go...
 type NameType struct {
 	FirstName  string `json:"first_name"`
 	MiddleName string `json:"middle_name"`
 	LastName   string `json:"last_name"`
+}
+
+func (name NameType) String() string {
+	// Display the full-name : <full-name>, middle-name : <middle-name> and surname : <surname> on 3 separate lines.
+	return fmt.Sprintf("full-name: %s %s %s\nmiddle-name: %s\nsurname: %s\n", name.FirstName, name.MiddleName, name.LastName, name.MiddleName, name.LastName)
 }
 
 type DobType struct {
