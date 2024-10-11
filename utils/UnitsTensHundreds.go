@@ -2,7 +2,6 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 )
 
 type Units []int
@@ -32,7 +31,7 @@ func NewUnits(numbers []int) (Units, error) {
 	}
 	return units, nil
 }
-func (units Units) SumUnits() int {
+func (units Units) Sum() int {
 	return sumArray(units)
 }
 
@@ -47,8 +46,7 @@ func NewTens(numbers []int) (Tens, error) {
 	}
 	return tens, nil
 }
-func (tens Tens) SumTens() int {
-	fmt.Println("sum tens!")
+func (tens Tens) Sum() int {
 	return sumArray(tens)
 }
 
@@ -63,6 +61,6 @@ func NewHundreds(numbers []int) (Hundreds, error) {
 	}
 	return hundreds, nil
 }
-func (hundreds Hundreds) SumHundreds() int {
+func (hundreds Hundreds) Sum() int {
 	return sumArray(hundreds)
 }

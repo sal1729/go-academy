@@ -40,9 +40,9 @@ func main() {
 	hundreds, _ := utils.NewHundreds(n3)
 
 	// Use methods to sum
-	uSum := units.SumUnits()
-	tSum := tens.SumTens()
-	hSum := hundreds.SumHundreds()
+	uSum := units.Sum()
+	tSum := tens.Sum()
+	hSum := hundreds.Sum()
 
 	fmt.Println("Group sums: ", uSum, tSum, hSum)
 	fmt.Println("Total sum:", uSum+tSum+hSum)
