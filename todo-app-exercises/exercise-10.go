@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	todo "todo_app_functions"
 )
 
@@ -19,11 +18,5 @@ func main() {
 		{Task: "Stop! Look!"},
 		{Task: "Buy the book"},
 	}
-	printToDoList(todoList...)
-}
-
-func printToDoList(list ...todo.ListEntry) {
-	for _, entry := range list {
-		fmt.Println(entry)
-	}
+	todo.PrintList(todoList...)
 }
