@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 	todo "todo_app_functions"
 )
 
@@ -31,7 +33,11 @@ func main() {
 		{Task: "Buy the book"},
 	}
 
-	jsonString, err := todo.ListAsJson[string](tasks...)
+	dir, err := os.Getwd()
 	catchError(err)
-	log.Println(jsonString)
+
+	filename := filepath.Join(dir, "files/todo-list.json")
+	byteCount, err := todo.ListToFile(filename, tasks...)
+	catchError(err)
+	log.Printf("Saved %s, %d bytes", filename, byteCount)
 }

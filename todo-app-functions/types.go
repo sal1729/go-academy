@@ -11,3 +11,7 @@ func (e ListEntry) String() string {
 type TodoList struct {
 	Entries []ListEntry `json:"entries"`
 }
+
+type JsonOutput interface {
+	~string | ~[]byte
+}
