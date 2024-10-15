@@ -1,1 +1,5 @@
+# Ignore input/output files
 **/files/
+
+# Ignore files without extensions (most importantly, executables)
+*.[^o]
