@@ -62,3 +62,12 @@ func ListToFile(filename string, list ...ListEntry) (int, error) {
 	}
 	return b, nil
 }
+
+func GetTaskStatus(taskname string, list TodoList) (string, error) {
+	for _, e := range list.Entries {
+		if e.Task == taskname {
+			return e.Status, nil
+		}
+	}
+	return "", fmt.Errorf("task not found: %s", taskname)
+}

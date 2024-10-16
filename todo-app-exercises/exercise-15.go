@@ -61,7 +61,7 @@ func main() {
 
 	// Wait for done signal, then tidy up
 	<-done
-	fmt.Printf("Final value: %d\n", x)
+	fmt.Printf("---\nFinal value: %d\n", x)
 	close(odds)
 	close(evens)
 	close(done)
