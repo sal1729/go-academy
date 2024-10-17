@@ -23,3 +23,6 @@
 `go test -v` to run the test files in the active directory, with verbose logging
 
 // TODO How do we get rid of installed programs?
+// TODO More testing - horribly light on testing
+// TODO Is my use of public/private methods wonky?
+// TODO Is my general ignoring and use of */& ok?

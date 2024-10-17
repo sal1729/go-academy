@@ -52,7 +52,7 @@ func ListToFile(filename string, list ...ListEntry) (int, error) {
 		if closeErr := file.Close(); closeErr != nil {
 			fmt.Printf("Warning: failed to close file %s: %v\n", filename, closeErr)
 		} else {
-			fmt.Printf("Closed file %s.\n", filename)
+			fmt.Printf("Closed file %s\n", filename)
 		}
 	}()
 
@@ -63,11 +63,56 @@ func ListToFile(filename string, list ...ListEntry) (int, error) {
 	return b, nil
 }
 
-func GetTaskStatus(taskname string, list TodoList) (string, error) {
-	for _, e := range list.Entries {
-		if e.Task == taskname {
-			return e.Status, nil
+func HandleRequests(datasource Datasource, requests []CrudRequest) error {
+	// TODO Handle unhappy path where there was nothing to update/delete/list
+	for _, req := range requests {
+		switch req.action {
+		case "create":
+			newEntry, createErr := datasource.Create(req.task, req.status)
+			if createErr != nil {
+				return createErr
+			}
+			fmt.Println("Created entry:\n", newEntry)
+		case "list":
+			list, listErr := datasource.Read(req.task, req.status)
+			if listErr != nil {
+				return listErr
+			}
+			fmt.Println("Listing entries:", list)
+		case "update":
+			updates, updateErr := datasource.Update(req.task, req.status)
+			if updateErr != nil {
+				return updateErr
+			}
+			fmt.Println("Updated entries:", updates)
+		case "delete":
+			deletions, deleteErr := datasource.Delete(req.task, req.status)
+			if deleteErr != nil {
+				return deleteErr
+			}
+			fmt.Println("Deleted entries:", deletions)
+		default:
+			return fmt.Errorf("unknown action: %s", req.action)
 		}
 	}
-	return "", fmt.Errorf("task not found: %s", taskname)
+	return nil
+}
+
+func FilterByStatus(entries []ListEntry, status string) []ListEntry {
+	var filteredList []ListEntry
+	for _, entry := range entries {
+		if entry.Status == status {
+			filteredList = append(filteredList, entry)
+		}
+	}
+	return filteredList
+}
+
+func GetTaskByName(entries []ListEntry, taskName string) (ListEntry, error) {
+	for _, entry := range entries {
+		if entry.Task == taskName {
+			return entry, nil
+		}
+	}
+	return ListEntry{}, fmt.Errorf("task not found: %s", taskName)
 }

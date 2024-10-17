@@ -6,8 +6,8 @@ import (
 )
 
 func TestListAsJsonString(t *testing.T) {
-	input := []ListEntry{{Task: "Task 1"}, {Task: "Task 2"}}
-	expectedOutput := "{\n  \"entries\": [\n    {\n      \"task\": \"Task 1\"\n    },\n    {\n      \"task\": \"Task 2\"\n    }\n  ]\n}"
+	input := []ListEntry{{Task: "Task 1", Status: "Done"}, {Task: "Task 2", Status: "In Progress"}}
+	expectedOutput := "{\n  \"entries\": [\n    {\n      \"task\": \"Task 1\",\n      \"status\": \"Done\"\n    },\n    {\n      \"task\": \"Task 2\",\n      \"status\": \"In Progress\"\n    }\n  ]\n}"
 
 	result, err := ListAsJson[string](input...)
 	if err != nil {
@@ -21,8 +21,8 @@ func TestListAsJsonString(t *testing.T) {
 }
 
 func TestListAsJsonBytes(t *testing.T) {
-	input := []ListEntry{{Task: "Task 1"}, {Task: "Task 2"}}
-	expectedOutput := []byte("{\n  \"entries\": [\n    {\n      \"task\": \"Task 1\"\n    },\n    {\n      \"task\": \"Task 2\"\n    }\n  ]\n}")
+	input := []ListEntry{{Task: "Task 1", Status: "Done"}, {Task: "Task 2", Status: "In Progress"}}
+	expectedOutput := []byte("{\n  \"entries\": [\n    {\n      \"task\": \"Task 1\",\n      \"status\": \"Done\"\n    },\n    {\n      \"task\": \"Task 2\",\n      \"status\": \"In Progress\"\n    }\n  ]\n}")
 
 	result, err := ListAsJson[[]byte](input...)
 	if err != nil {
