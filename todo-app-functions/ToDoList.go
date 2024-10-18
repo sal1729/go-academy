@@ -51,8 +51,6 @@ func ListToFile(filename string, list ...ListEntry) (int, error) {
 	defer func() {
 		if closeErr := file.Close(); closeErr != nil {
 			fmt.Printf("Warning: failed to close file %s: %v\n", filename, closeErr)
-		} else {
-			fmt.Printf("Closed file %s\n", filename)
 		}
 	}()
 

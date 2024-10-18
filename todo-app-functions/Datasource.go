@@ -45,6 +45,7 @@ func (d LocalDatasource) saveData(todoList TodoList) error {
 }
 
 func (d LocalDatasource) Create(task, status string) (ListEntry, error) {
+	fmt.Printf("Creating task %s, status %s\n", task, status)
 	newEntry := ListEntry{}
 	todoList, dataErr := d.getData()
 	if dataErr != nil {
@@ -68,6 +69,11 @@ func (d LocalDatasource) Create(task, status string) (ListEntry, error) {
 }
 
 func (d LocalDatasource) Read(task, status string) (Entries, error) {
+	statusString := "all"
+	if status != "" {
+		statusString = status
+	}
+	fmt.Printf("Reading task %s, status %s\n", task, statusString)
 	var list []ListEntry
 	todoList, dataErr := d.getData()
 	if dataErr != nil {
@@ -87,6 +93,7 @@ func (d LocalDatasource) Read(task, status string) (Entries, error) {
 }
 
 func (d LocalDatasource) Update(task, status string) (Entries, error) {
+	fmt.Printf("Updating task %s, status %s\n", task, status)
 	var updates []ListEntry
 	todoList, dataErr := d.getData()
 	if dataErr != nil {
@@ -118,6 +125,15 @@ func (d LocalDatasource) Update(task, status string) (Entries, error) {
 }
 
 func (d LocalDatasource) Delete(task, status string) (Entries, error) {
+	taskString := "all"
+	if task != "" {
+		taskString = task
+	}
+	statusString := "all"
+	if status != "" {
+		statusString = status
+	}
+	fmt.Printf("Deleting task %s, status %s\n", taskString, statusString)
 	var deletions []ListEntry
 	todoList, dataErr := d.getData()
 	if dataErr != nil {

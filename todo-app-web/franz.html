@@ -65,7 +65,7 @@
 </head>
 <body>
 <h1>franz</h1>
-<h2>This is the franz to do lis(z)t app!{{.Filter}}</h2>
+<h2>This is the franz to do lis(z)t app! Showing all{{.FilterString}}tasks.</h2>
 <div class="button-container">
     <!-- Button to open the Create Task modal -->
     <button class="btn" onclick="openModal('createTaskModal')">Create New Task</button>
@@ -76,7 +76,8 @@
     <!-- Delete All Button -->
     <form action="/delete" method="POST" style="display: inline;">
         <input type="hidden" name="task" value="all">
-        <button type="submit" class="btn btn-delete">Delete All Tasks</button>
+        <input type="hidden" name="status" value="{{.Filter}}">
+        <button type="submit" class="btn btn-delete">Delete all{{.FilterString}}Tasks</button>
     </form>
 </div>
 
@@ -90,12 +91,13 @@
     </tr>
     </thead>
     <tbody>
+    <!-- Go's html templating lets us loop through a list and provide a default if the list is empty -->
     {{range .Tasks}}
     <tr>
         <td>{{.Task}}</td>
         <td class="task-status">{{.Status}}</td>
         <td>
-            <button class="btn" onclick="openModal('editTaskModal', '{{.Task}}', '{{.Status}}')">Edit</button>
+            <button class="btn" onclick="openModal('updateTaskStatusModal', '{{.Task}}', '{{.Status}}')">Update Status</button>
             <form action="/delete" method="POST" style="display:inline;">
                 <input type="hidden" name="task" value="{{.Task}}">
                 <button type="submit" class="btn btn-delete">Delete</button>
@@ -114,11 +116,16 @@
 <div id="createTaskModal" class="modal">
     <div class="modal-content">
         <h2>Create New Task</h2>
-        <form action="/create-task" method="POST">
+        <form action="/create" method="POST">
             <label for="newTask">Task:</label>
             <input type="text" id="newTask" name="task" required><br><br>
             <label for="newStatus">Status:</label>
-            <input type="text" id="newStatus" name="status" required><br><br>
+            <select id="newStatus" name="status" class="form-select" required>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Blocked">Blocked</option>
+                <option value="Done">Done</option>
+            </select><br><br>
             <button type="submit" class="btn">Create Task</button>
             <button type="button" class="btn" onclick="closeModal('createTaskModal')">Close</button>
         </form>
@@ -144,23 +151,21 @@
     </div>
 </div>
 
-<!-- Edit Task Modal -->
-<div id="editTaskModal" class="modal">
+<!-- Update Task Status Modal -->
+<div id="updateTaskStatusModal" class="modal">
     <div class="modal-content">
-        <h2>Edit Task</h2>
+        <h2 id="updateTaskStatus">Update Task Status</h2>
         <form action="/update" method="POST">
-            <input type="hidden" id="editTaskOriginal" name="original_task">
-            <label for="editTask">Task:</label>
-            <input type="text" id="editTask" name="task" required><br><br>
-            <label for="editStatus">Status:</label>
-            <select id="editStatus" name="status" class="form-select" required>
+            <input type="hidden" id="taskToUpdate" name="task" value="">
+            <label for="updateStatus">Status:</label>
+            <select id="updateStatus" name="status" class="form-select" required>
                 <option value="To Do">To Do</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Blocked">Blocked</option>
                 <option value="Done">Done</option>
             </select><br><br>
-            <button type="submit" class="btn">Update Task</button>
-            <button type="button" class="btn" onclick="closeModal('editTaskModal')">Close</button>
+            <button type="submit" class="btn">Update Status</button>
+            <button type="button" class="btn" onclick="closeModal('updateTaskStatusModal')">Close</button>
         </form>
     </div>
 </div>
@@ -169,12 +174,11 @@
     function openModal(modalId, task = '', status = '') {
         document.getElementById(modalId).style.display = 'block';
 
-        if (modalId === 'editTaskModal') {
-            document.getElementById('editTask').value = task;
-            document.getElementById('editTaskOriginal').value = task;
-
-            // Set the status dropdown to the current status
-            document.getElementById('editStatus').value = status;
+        if (modalId === 'updateTaskStatusModal') {
+            // Set the task and status to current
+            document.getElementById('updateTaskStatus').textContent = `Update "${task}" Status`;
+            document.getElementById('taskToUpdate').value = task;
+            document.getElementById('updateStatus').value = status;
         }
     }
 
