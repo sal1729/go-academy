@@ -48,7 +48,7 @@ func main() {
 	dir, dirErr := os.Getwd()
 	catchError(dirErr)
 	datasource := todo.LocalDatasource{
-		Filepath: filepath.Join(dir, fmt.Sprintf("files/%s", *filename)),
+		Filepath: filepath.Join(dir, fmt.Sprintf("data/%s", *filename)),
 	}
 
 	// Handle request

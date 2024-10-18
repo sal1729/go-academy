@@ -43,16 +43,16 @@ type UserInput struct {
 }
 
 type CrudRequest struct {
-	action string
-	task   string
-	status string
+	Action string `json:"action"`
+	Task   string `json:"task"`
+	Status string `json:"status"`
 }
 
 func (c *CrudRequest) SetActionAndFilter(action, task, status string) error {
-	if c.action != "" {
-		return fmt.Errorf("action (%s) is already set", c.action)
+	if c.Action != "" {
+		return fmt.Errorf("action (%s) is already set", c.Action)
 	}
-	c.action = action
+	c.Action = action
 
 	if task == "" {
 		return fmt.Errorf("task cannot be empty")
@@ -60,7 +60,7 @@ func (c *CrudRequest) SetActionAndFilter(action, task, status string) error {
 	if task == "all" && action == "create" {
 		return fmt.Errorf("cannot create 'all' - reserved keyword")
 	}
-	c.task = task
+	c.Task = task
 
 	if status == "" && (action == "create" || action == "update") {
 		return fmt.Errorf("cannot create or update without status")
@@ -72,7 +72,7 @@ func (c *CrudRequest) SetActionAndFilter(action, task, status string) error {
 	if !re.MatchString(status) && action == "update" && task == "all" {
 		return fmt.Errorf("update status must be of the form 'status*TO*newStatus")
 	}
-	c.status = status
+	c.Status = status
 
 	return nil
 }

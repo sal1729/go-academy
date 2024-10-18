@@ -1,0 +1,186 @@
+<!--Mostly ChatGPT because writing html from scratch is wicked dull-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Franz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .task-status {
+            text-transform: capitalize;
+        }
+        .btn {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-delete {
+            background-color: red;
+        }
+        .btn-delete:hover {
+            background-color: darkred;
+        }
+        .button-container {
+            margin-bottom: 20px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+<h1>franz</h1>
+<h2>This is the franz to do lis(z)t app!{{.Filter}}</h2>
+<div class="button-container">
+    <!-- Button to open the Create Task modal -->
+    <button class="btn" onclick="openModal('createTaskModal')">Create New Task</button>
+
+    <!-- Button to open the Filter modal -->
+    <button class="btn" onclick="openModal('filterModal')">Filter by Status</button>
+
+    <!-- Delete All Button -->
+    <form action="/delete" method="POST" style="display: inline;">
+        <input type="hidden" name="task" value="all">
+        <button type="submit" class="btn btn-delete">Delete All Tasks</button>
+    </form>
+</div>
+
+<!-- Task list table -->
+<table>
+    <thead>
+    <tr>
+        <th>Task</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{range .Tasks}}
+    <tr>
+        <td>{{.Task}}</td>
+        <td class="task-status">{{.Status}}</td>
+        <td>
+            <button class="btn" onclick="openModal('editTaskModal', '{{.Task}}', '{{.Status}}')">Edit</button>
+            <form action="/delete" method="POST" style="display:inline;">
+                <input type="hidden" name="task" value="{{.Task}}">
+                <button type="submit" class="btn btn-delete">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {{else}}
+    <tr>
+        <td colspan="3">No tasks available</td>
+    </tr>
+    {{end}}
+    </tbody>
+</table>
+
+<!-- Create Task Modal -->
+<div id="createTaskModal" class="modal">
+    <div class="modal-content">
+        <h2>Create New Task</h2>
+        <form action="/create-task" method="POST">
+            <label for="newTask">Task:</label>
+            <input type="text" id="newTask" name="task" required><br><br>
+            <label for="newStatus">Status:</label>
+            <input type="text" id="newStatus" name="status" required><br><br>
+            <button type="submit" class="btn">Create Task</button>
+            <button type="button" class="btn" onclick="closeModal('createTaskModal')">Close</button>
+        </form>
+    </div>
+</div>
+
+<!-- Filter by Status Modal -->
+<div id="filterModal" class="modal">
+    <div class="modal-content">
+        <h2>Filter by Status</h2>
+        <form action="/list" method="POST">
+            <label for="filterStatus">Select Status:</label>
+            <select id="filterStatus" name="status" class="form-select" required>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Blocked">Blocked</option>
+                <option value="Done">Done</option>
+                <option value="All">All</option>
+            </select>
+            <button type="submit" class="btn">Filter</button>
+            <button type="button" class="btn" onclick="closeModal('filterModal')">Close</button>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Task Modal -->
+<div id="editTaskModal" class="modal">
+    <div class="modal-content">
+        <h2>Edit Task</h2>
+        <form action="/update" method="POST">
+            <input type="hidden" id="editTaskOriginal" name="original_task">
+            <label for="editTask">Task:</label>
+            <input type="text" id="editTask" name="task" required><br><br>
+            <label for="editStatus">Status:</label>
+            <select id="editStatus" name="status" class="form-select" required>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Blocked">Blocked</option>
+                <option value="Done">Done</option>
+            </select><br><br>
+            <button type="submit" class="btn">Update Task</button>
+            <button type="button" class="btn" onclick="closeModal('editTaskModal')">Close</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(modalId, task = '', status = '') {
+        document.getElementById(modalId).style.display = 'block';
+
+        if (modalId === 'editTaskModal') {
+            document.getElementById('editTask').value = task;
+            document.getElementById('editTaskOriginal').value = task;
+
+            // Set the status dropdown to the current status
+            document.getElementById('editStatus').value = status;
+        }
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+</script>
+</body>
+</html>

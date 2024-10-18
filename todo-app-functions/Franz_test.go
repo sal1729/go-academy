@@ -44,7 +44,7 @@ func TestCrudRequest_SetActionAndFilter(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			output := CrudRequest{action: tt.initialAction}
+			output := CrudRequest{Action: tt.initialAction}
 			err := output.SetActionAndFilter(tt.action, tt.task, tt.status)
 
 			if tt.expectError {
@@ -55,9 +55,9 @@ func TestCrudRequest_SetActionAndFilter(t *testing.T) {
 				}
 			} else {
 				expected := CrudRequest{
-					action: tt.action,
-					task:   tt.task,
-					status: tt.status,
+					Action: tt.action,
+					Task:   tt.task,
+					Status: tt.status,
 				}
 				if err != nil {
 					t.Errorf("expected no error but got '%s'", err)
@@ -147,14 +147,14 @@ func TestGetCrudRequestFromUserInput(t *testing.T) {
 				return
 			}
 
-			if actual.action != tt.expectedAction {
-				t.Errorf("Expected action %s, got %s", tt.expectedAction, actual.action)
+			if actual.Action != tt.expectedAction {
+				t.Errorf("Expected action %s, got %s", tt.expectedAction, actual.Action)
 			}
-			if actual.task != tt.expectedTask {
-				t.Errorf("Expected task %s, got %s", tt.expectedTask, actual.task)
+			if actual.Task != tt.expectedTask {
+				t.Errorf("Expected task %s, got %s", tt.expectedTask, actual.Task)
 			}
-			if actual.status != tt.expectedStatus {
-				t.Errorf("Expected status %s, got %s", tt.expectedStatus, actual.status)
+			if actual.Status != tt.expectedStatus {
+				t.Errorf("Expected status %s, got %s", tt.expectedStatus, actual.Status)
 			}
 		})
 	}

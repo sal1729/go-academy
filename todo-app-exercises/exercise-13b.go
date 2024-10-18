@@ -27,7 +27,7 @@ func main() {
 	dir, dirErr := os.Getwd()
 	catchError(dirErr)
 
-	filename := filepath.Join(dir, "files/todo-list.json")
+	filename := filepath.Join(dir, "data/todo-list.json")
 	todoListEntries, err := todo.StreamEntriesFromFile(filename, tasksToRead)
 	catchError(err)
 

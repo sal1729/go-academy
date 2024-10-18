@@ -66,33 +66,33 @@ func ListToFile(filename string, list ...ListEntry) (int, error) {
 func HandleRequests(datasource Datasource, requests []CrudRequest) error {
 	// TODO Handle unhappy path where there was nothing to update/delete/list
 	for _, req := range requests {
-		switch req.action {
+		switch req.Action {
 		case "create":
-			newEntry, createErr := datasource.Create(req.task, req.status)
+			newEntry, createErr := datasource.Create(req.Task, req.Status)
 			if createErr != nil {
 				return createErr
 			}
 			fmt.Println("Created entry:\n", newEntry)
 		case "list":
-			list, listErr := datasource.Read(req.task, req.status)
+			list, listErr := datasource.Read(req.Task, req.Status)
 			if listErr != nil {
 				return listErr
 			}
 			fmt.Println("Listing entries:", list)
 		case "update":
-			updates, updateErr := datasource.Update(req.task, req.status)
+			updates, updateErr := datasource.Update(req.Task, req.Status)
 			if updateErr != nil {
 				return updateErr
 			}
 			fmt.Println("Updated entries:", updates)
 		case "delete":
-			deletions, deleteErr := datasource.Delete(req.task, req.status)
+			deletions, deleteErr := datasource.Delete(req.Task, req.Status)
 			if deleteErr != nil {
 				return deleteErr
 			}
 			fmt.Println("Deleted entries:", deletions)
 		default:
-			return fmt.Errorf("unknown action: %s", req.action)
+			return fmt.Errorf("unknown action: %s", req.Action)
 		}
 	}
 	return nil

@@ -1,2 +1,2 @@
-# Ignore files without extensions (most importantly, executables)
+# Ignore data without extensions (most importantly, executables)
 *.[^o]

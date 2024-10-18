@@ -36,7 +36,7 @@ func main() {
 	dir, err := os.Getwd()
 	catchError(err)
 
-	filename := filepath.Join(dir, "files/todo-list.json")
+	filename := filepath.Join(dir, "data/todo-list.json")
 	byteCount, err := todo.ListToFile(filename, tasks...)
 	catchError(err)
 	log.Printf("Saved %s, %d bytes", filename, byteCount)

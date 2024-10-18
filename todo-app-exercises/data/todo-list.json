@@ -2,43 +2,43 @@
   "entries": [
     {
       "task": "Feed the floor",
-      "status": ""
+      "status": "To Do"
     },
     {
       "task": "Sweep the dishes",
-      "status": ""
+      "status": "In Progress"
     },
     {
       "task": "Rock the rug",
-      "status": ""
+      "status": "Done"
     },
     {
       "task": "Scrub the fishes",
-      "status": ""
+      "status": "Blocked"
     },
     {
       "task": "Vacuum the lawn",
-      "status": ""
+      "status": "In Progress"
     },
     {
       "task": "Bathe the mat",
-      "status": ""
+      "status": "Done"
     },
     {
       "task": "Mop the baby",
-      "status": ""
+      "status": "To Do"
     },
     {
       "task": "Mow the cat",
-      "status": ""
+      "status": "Blocked"
     },
     {
       "task": "Stop! Look!",
-      "status": ""
+      "status": "In Progress"
     },
     {
       "task": "Buy the book",
-      "status": ""
+      "status": "To Do"
     }
   ]
 }

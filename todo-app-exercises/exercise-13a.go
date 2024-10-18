@@ -24,7 +24,7 @@ func main() {
 	dir, err := os.Getwd()
 	catchError(err)
 
-	filename := filepath.Join(dir, "files/todo-list.json")
+	filename := filepath.Join(dir, "data/todo-list.json")
 	todoListBytes, err := todo.JsonBytesFromFile(filename)
 	catchError(err)
 

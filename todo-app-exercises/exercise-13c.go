@@ -32,7 +32,7 @@ func main() {
 
 	dir, dirErr := os.Getwd()
 	catchError(dirErr)
-	file := filepath.Join(dir, fmt.Sprintf("files/%s", *filename))
+	file := filepath.Join(dir, fmt.Sprintf("data/%s", *filename))
 
 	todoListEntries, err := todo.StreamEntriesFromFile(file, *tasksToRead)
 	catchError(err)
