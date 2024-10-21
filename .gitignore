@@ -1,2 +1,5 @@
 # Ignore data without extensions (most importantly, executables)
 *.[^o]
+
+# Don't commit the Sarah junk folder
+junk/

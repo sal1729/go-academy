@@ -16,6 +16,7 @@ func main() {
 	// Set properties of the predefined Logger, including
 	// the log entry prefix and a flag to disable printing
 	// the time, source file, and line number.
+	// This is pretty useless - we never pass the logger through anywhere
 	log.SetPrefix("ToDo: ")
 	log.SetFlags(0)
 
@@ -23,9 +24,8 @@ func main() {
 	if dirErr != nil {
 		log.Fatal(dirErr)
 	}
-	datasource := &todo.LocalMuDatasource{
-		Filepath: filepath.Join(dir, fmt.Sprintf("data/%s", "todo-list.json")),
-	}
+	datasource := todo.InitialiseDatasource(filepath.Join(dir, fmt.Sprintf("data/%s", "todo-list.json")))
+
 	http.HandleFunc("/create", makeHandler(createHandler, datasource))
 	http.HandleFunc("/list", makeHandler(listHandler, datasource))
 	http.HandleFunc("/update", makeHandler(updateHandler, datasource))

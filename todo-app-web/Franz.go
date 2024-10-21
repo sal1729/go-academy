@@ -24,7 +24,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p Page) {
 	}
 }
 
-func createHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasource) {
+func createHandler(w http.ResponseWriter, r *http.Request, d *todo.ConcurrentDatasource) {
 	data := todo.CrudRequest{
 		Action: "create",
 	}
@@ -44,7 +44,7 @@ func createHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasourc
 	}
 
 	// Handle request
-	_, createErr := d.Create(data.Task, data.Status)
+	createErr := d.Create(data.Task, data.Status)
 	if createErr != nil {
 		http.Error(w, fmt.Sprintf("Error handling request: %s, Error: %v", data, createErr), http.StatusBadRequest)
 		return
@@ -54,7 +54,7 @@ func createHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasourc
 	http.Redirect(w, r, "/list", http.StatusFound)
 }
 
-func listHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasource) {
+func listHandler(w http.ResponseWriter, r *http.Request, d *todo.ConcurrentDatasource) {
 	data := todo.CrudRequest{
 		Action: "list",
 	}
@@ -102,8 +102,8 @@ func listHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasource)
 	renderTemplate(w, "franz", page)
 }
 
-func updateHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasource) {
-	data := todo.CrudRequest{ // This block is redundant in each handler as we call the correct action on the datasource
+func updateHandler(w http.ResponseWriter, r *http.Request, d *todo.ConcurrentDatasource) {
+	data := todo.CrudRequest{ // This block is kinda redundant in each handler as we call the correct action on the datasource
 		Action: "update", // This handler is almost identical to the createHandler TODO dedupe?
 	}
 
@@ -122,7 +122,7 @@ func updateHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasourc
 	}
 
 	// Handle request
-	_, updateErr := d.Update(data.Task, data.Status)
+	updateErr := d.Update(data.Task, data.Status)
 	if updateErr != nil {
 		http.Error(w, fmt.Sprintf("Error handling request: %s, Error: %v", data, updateErr), http.StatusBadRequest)
 		return
@@ -132,7 +132,7 @@ func updateHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasourc
 	http.Redirect(w, r, "/list", http.StatusFound)
 }
 
-func deleteHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasource) {
+func deleteHandler(w http.ResponseWriter, r *http.Request, d *todo.ConcurrentDatasource) {
 	data := todo.CrudRequest{ // This block is redundant in each handler as we call the correct action on the datasource
 		Action: "delete", // This handler is almost identical to the createHandler TODO dedupe?
 	}
@@ -152,7 +152,7 @@ func deleteHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasourc
 	}
 
 	// Handle request
-	_, deleteErr := d.Delete(data.Task, data.Status)
+	deleteErr := d.Delete(data.Task, data.Status)
 	if deleteErr != nil {
 		http.Error(w, fmt.Sprintf("Error handling request: %s, Error: %v", data, deleteErr), http.StatusBadRequest)
 		return
@@ -163,7 +163,7 @@ func deleteHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasourc
 }
 
 // A closure allows us to inject the datasource into the handlers, instantiating it only once
-func makeHandler(fn func(http.ResponseWriter, *http.Request, todo.MutexDatasource), datasource todo.MutexDatasource) http.HandlerFunc {
+func makeHandler(fn func(http.ResponseWriter, *http.Request, *todo.ConcurrentDatasource), datasource *todo.ConcurrentDatasource) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fn(w, r, datasource)
 	}

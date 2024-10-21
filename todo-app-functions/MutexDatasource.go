@@ -21,7 +21,6 @@ type LocalMuDatasource struct {
 	mu       sync.RWMutex
 }
 
-// TODO Test this lot
 func (d *LocalMuDatasource) getData() (TodoList, error) {
 	var todoList TodoList
 	todoListData, readErr := JsonBytesFromFile(d.Filepath)
