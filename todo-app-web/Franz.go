@@ -24,7 +24,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p Page) {
 	}
 }
 
-func createHandler(w http.ResponseWriter, r *http.Request, d todo.Datasource) {
+func createHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasource) {
 	data := todo.CrudRequest{
 		Action: "create",
 	}
@@ -54,7 +54,7 @@ func createHandler(w http.ResponseWriter, r *http.Request, d todo.Datasource) {
 	http.Redirect(w, r, "/list", http.StatusFound)
 }
 
-func listHandler(w http.ResponseWriter, r *http.Request, d todo.Datasource) {
+func listHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasource) {
 	data := todo.CrudRequest{
 		Action: "list",
 	}
@@ -102,7 +102,7 @@ func listHandler(w http.ResponseWriter, r *http.Request, d todo.Datasource) {
 	renderTemplate(w, "franz", page)
 }
 
-func updateHandler(w http.ResponseWriter, r *http.Request, d todo.Datasource) {
+func updateHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasource) {
 	data := todo.CrudRequest{ // This block is redundant in each handler as we call the correct action on the datasource
 		Action: "update", // This handler is almost identical to the createHandler TODO dedupe?
 	}
@@ -132,7 +132,7 @@ func updateHandler(w http.ResponseWriter, r *http.Request, d todo.Datasource) {
 	http.Redirect(w, r, "/list", http.StatusFound)
 }
 
-func deleteHandler(w http.ResponseWriter, r *http.Request, d todo.Datasource) {
+func deleteHandler(w http.ResponseWriter, r *http.Request, d todo.MutexDatasource) {
 	data := todo.CrudRequest{ // This block is redundant in each handler as we call the correct action on the datasource
 		Action: "delete", // This handler is almost identical to the createHandler TODO dedupe?
 	}
@@ -163,7 +163,7 @@ func deleteHandler(w http.ResponseWriter, r *http.Request, d todo.Datasource) {
 }
 
 // A closure allows us to inject the datasource into the handlers, instantiating it only once
-func makeHandler(fn func(http.ResponseWriter, *http.Request, todo.Datasource), datasource todo.Datasource) http.HandlerFunc {
+func makeHandler(fn func(http.ResponseWriter, *http.Request, todo.MutexDatasource), datasource todo.MutexDatasource) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fn(w, r, datasource)
 	}

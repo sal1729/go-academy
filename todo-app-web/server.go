@@ -10,7 +10,7 @@ import (
 )
 
 // Based on https://go.dev/doc/articles/wiki/
-// Run `go build -o franz_web exercise-18.go` to construct the executable
+// Run `go build -o franz_web server.go` to construct the executable
 // Our app is called franz, after Franz Liszt.
 func main() {
 	// Set properties of the predefined Logger, including
@@ -23,7 +23,7 @@ func main() {
 	if dirErr != nil {
 		log.Fatal(dirErr)
 	}
-	datasource := todo.LocalDatasource{
+	datasource := &todo.LocalMuDatasource{
 		Filepath: filepath.Join(dir, fmt.Sprintf("data/%s", "todo-list.json")),
 	}
 	http.HandleFunc("/create", makeHandler(createHandler, datasource))
