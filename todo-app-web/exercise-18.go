@@ -26,9 +26,9 @@ func main() {
 	datasource := todo.LocalDatasource{
 		Filepath: filepath.Join(dir, fmt.Sprintf("data/%s", "todo-list.json")),
 	}
-	http.HandleFunc("/create", makeHandler(createHandler, datasource))
-	http.HandleFunc("/list", makeHandler(listHandler, datasource))
-	http.HandleFunc("/update", makeHandler(updateHandler, datasource))
-	http.HandleFunc("/delete", makeHandler(deleteHandler, datasource))
+	http.HandleFunc("/create", actionHandler("create", datasource))
+	http.HandleFunc("/list", actionHandler("list", datasource))
+	http.HandleFunc("/update", actionHandler("update", datasource))
+	http.HandleFunc("/delete", actionHandler("delete", datasource))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
