@@ -1,16 +1,13 @@
+// This is exercise 17 again
 package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
-	"os"
-	"path/filepath"
-	todo "todo_app_functions"
 )
 
-// Based on exercise-13c.go
-// Run `go build -o franz exercise-17.go` to construct the executable
+// Based on exercise-17.go
+// Run `go build -o franz cli.go` to construct the executable
 // Our app is called franz, after Franz Liszt.
 // Example commands
 // CREATE: `./franz -create "New Task Name" -status "In Progress"`
@@ -21,7 +18,7 @@ func main() {
 	// Set properties of the predefined Logger, including
 	// the log entry prefix and a flag to disable printing
 	// the time, source file, and line number.
-	log.SetPrefix("ToDo: ")
+	log.SetPrefix("franz: ")
 	log.SetFlags(0)
 	// Also set up a function for catching errors
 	catchError := func(err error) {
@@ -31,7 +28,7 @@ func main() {
 	}
 
 	// Option flags
-	filename := flag.String("filename", "todo-list.json", "filename to read")
+	// filename := flag.String("filename", "todo-list.json", "filename to read")
 	create := flag.String("create", "", "task to create, must pass with -status")
 	status := flag.String("status", "", "status to create/read/update/delete, must be passed with other flags")
 	list := flag.String("list", "", "pass with all to list all tasks, with taskname to list single task, with all and -status to filter on status")
@@ -40,19 +37,26 @@ func main() {
 	flag.Parse()
 
 	// Convert user input to CrudRequest
-	input := todo.UserInput{Create: *create, Status: *status, List: *list, Update: *update, Delete: *del}
-	request, inputErr := todo.GetCrudRequestFromUserInput(input)
-	catchError(inputErr)
+	input := UserInput{Create: *create, Status: *status, List: *list, Update: *update, Delete: *del}
+	request, err := getCrudRequestFromUserInput(input)
+	catchError(err)
 
-	// Initialise Datasource
-	dir, dirErr := os.Getwd()
-	catchError(dirErr)
-	datasource := todo.LocalDatasource{
-		Filepath: filepath.Join(dir, fmt.Sprintf("data/%s", *filename)),
+	// Get data
+	todoList := []TodoItem{
+		{Task: "Feed the floor", Status: "To Do"},
+		{Task: "Sweep the dishes", Status: "In Progress"},
+		{Task: "Rock the rug", Status: "In Progress"},
+		{Task: "Scrub the fishes", Status: "To Do"},
+		{Task: "Vacuum the lawn", Status: "Done"},
+		{Task: "Bathe the mat", Status: "Done"},
+		{Task: "Mop the baby", Status: "In Progress"},
+		{Task: "Mow the cat", Status: "Blocked"},
+		{Task: "Stop! Look!", Status: "To Do"},
+		{Task: "Buy the book", Status: "Blocked"},
 	}
 
 	// Handle request
-	requestError := todo.HandleRequests(datasource, []todo.CrudRequest{request})
+	requestError := handleRequest(todoList, request)
 	catchError(requestError)
 
 	log.Println("Request handled successfully:", request)

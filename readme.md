@@ -21,4 +21,5 @@ It's API-ish, definitely not restful.
 - `feature/no-go` - The working app before I attempted any refactoring of the datasource logic.
   This doesn't use any go routines.
   It's undoubtedly not very performant as every CRUD operation against the data is wrapped in a read/write to the file containing the data.
-- `main` - The latest version
+- `feature/oops` - The working app after adding in some concurrency/goroutines _but_ this is too object-orient-y. I think I must have massively misunderstood the exercises somewhere 🤷
+- `main` - The latest version - I'm attempting a complete re-write with two days to go 🤦
