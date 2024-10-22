@@ -11,7 +11,7 @@ import (
 
 // Based on https://go.dev/doc/articles/wiki/
 // Run `go build -o franz_web server.go` to construct the executable
-// Our app is called franz, after Franz Liszt.
+// Our app is called franz-datastore, after Franz Liszt.
 func main() {
 	// Set properties of the predefined Logger, including
 	// the log entry prefix and a flag to disable printing

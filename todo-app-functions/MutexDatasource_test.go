@@ -20,7 +20,7 @@ func setupTestDatasource(t *testing.T, testname string) *LocalMuDatasource {
 	}
 }
 
-// Note, some missing test cases here - TestUpdateFilter and TestReadTask, but franz doesn't care about these.
+// Note, some missing test cases here - TestUpdateFilter and TestReadTask, but franz-datastore doesn't care about these.
 
 func TestCreate(t *testing.T) {
 	d := setupTestDatasource(t, "create-test")

@@ -1,4 +1,4 @@
-module franz_cli
+module franz-api
 
 go 1.23.2
 

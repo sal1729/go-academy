@@ -13,6 +13,11 @@ It also contains the cli tool version of the franz app.
 This has a set of functions which depend heavily on `todo-app-functions`.
 It's API-ish, definitely not restful.
 
+Then there's the more recent stuff
+- `franz-datastore` contains the crud operations for manipulating an in-memory list + some read/write stuff for persisting the list to a json file
+- `franz-cli` contains a cli tool to make requests against the datastore
+- `franz-api` is an attempt to wrap the datastore in an api. It's not _too_ bad, but I can't work out how to wire it up with the read/write stuff, or with the cli tool. There's no concurrency either
+
 ## Branches
 
 -  `feature/a-failed-attempt-to-rest` - An attempt to make things more restful -
@@ -23,3 +28,5 @@ It's API-ish, definitely not restful.
   It's undoubtedly not very performant as every CRUD operation against the data is wrapped in a read/write to the file containing the data.
 - `feature/oops` - The working app after adding in some concurrency/goroutines _but_ this is too object-orient-y. I think I must have massively misunderstood the exercises somewhere 🤷
 - `main` - The latest version - I'm attempting a complete re-write with two days to go 🤦
+So far I've split up the datastore, the cli tool and the api but really it just feels like I've moved code about for no real reason.
+I can't see how concurrency fits in or how to join up the http handler with persistence or the cli tool. 🤕
