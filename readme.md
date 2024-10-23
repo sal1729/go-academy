@@ -28,7 +28,7 @@ Then there's the more recent stuff
   It's undoubtedly not very performant as every CRUD operation against the data is wrapped in a read/write to the file containing the data.
 - `feature/oops` - The working app after adding in some concurrency/goroutines _but_ this is too object-orient-y. I think I must have massively misunderstood the exercises somewhere 🤷
 - `main` - The latest version - A less object-orient-y re-write. So far, the datastore has been refactored to use channels, the api wraps the datastore. Still to do:
-   * Get the cli tool using the api/wrapped datastore
-   * Get the web frontend wired in
+   * Get the cli tool using the api <- not sure how to do this
+   * Get the web frontend wired in <- current aim
    * Tests
-   * Users/context logging/database backend etc (v. unlikely)
+   * Users/context logging/database backend etc (v. unlikely I'll get round to this)

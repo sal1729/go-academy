@@ -15,7 +15,7 @@ type Page struct {
 	FilterString string
 }
 
-var templates = template.Must(template.ParseFiles("franz-datastore.html"))
+var templates = template.Must(template.ParseFiles("franz.html"))
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p Page) {
 	err := templates.ExecuteTemplate(w, tmpl+".html", p)
@@ -99,7 +99,7 @@ func listHandler(w http.ResponseWriter, r *http.Request, d *todo.ConcurrentDatas
 		Filter:       data.Status,
 		FilterString: filterString,
 	}
-	renderTemplate(w, "franz-datastore", page)
+	renderTemplate(w, "franz", page)
 }
 
 func updateHandler(w http.ResponseWriter, r *http.Request, d *todo.ConcurrentDatasource) {

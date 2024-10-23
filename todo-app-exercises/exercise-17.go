@@ -10,13 +10,13 @@ import (
 )
 
 // Based on exercise-13c.go
-// Run `go build -o franz-datastore exercise-17.go` to construct the executable
-// Our app is called franz-datastore, after Franz Liszt.
+// Run `go build -o franz exercise-17.go` to construct the executable
+// Our app is called franz, after Franz Liszt.
 // Example commands
-// CREATE: `./franz-datastore -create "New Task Name" -status "In Progress"`
-// READ: `./franz-datastore -list`, `./franz-datastore -list "Task Name"`, `./franz-datastore -list -status "Status"`
-// UPDATE: `./franz-datastore -update "Task Name" -status "New Status"`
-// DELETE: `./franz-datastore -delete "Task Name"`, `./franz-datastore -delete -status "Status"`
+// CREATE: `./franz -create "New Task Name" -status "In Progress"`
+// READ: `./franz -list`, `./franz -list "Task Name"`, `./franz -list -status "Status"`
+// UPDATE: `./franz -update "Task Name" -status "New Status"`
+// DELETE: `./franz -delete "Task Name"`, `./franz -delete -status "Status"`
 func main() {
 	// Set properties of the predefined Logger, including
 	// the log entry prefix and a flag to disable printing
