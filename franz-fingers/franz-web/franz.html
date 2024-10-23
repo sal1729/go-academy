@@ -1,0 +1,302 @@
+<!--Mostly ChatGPT because writing html from scratch is wicked dull-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>franz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .task-status {
+            text-transform: capitalize;
+        }
+        .btn {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-delete {
+            background-color: red;
+        }
+        .btn-delete:hover {
+            background-color: darkred;
+        }
+        .button-container {
+            margin-bottom: 20px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+<h1>franz</h1>
+<h2 id="filterTitle">This is the franz to do lis(z)t app! Showing all tasks.</h2>
+<div class="button-container">
+    <!-- Button to open the Create Task modal -->
+    <button class="btn" onclick="openModal('createTaskModal')">Create New Task</button>
+
+    <!-- Button to open the Filter modal -->
+    <button class="btn" onclick="openModal('filterModal')">Filter by Status</button>
+
+    <!-- Delete All Button -->
+    <button id="deleteAllButton" class="btn btn-delete" onclick="deleteAll()">Delete all Tasks</button>
+
+</div>
+
+<!-- Task list table -->
+<table>
+    <thead>
+    <tr>
+        <th>Task</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="taskList">
+    <!-- Go's html templating lets us loop through a list and provide a default if the list is empty -->
+    {{range .Tasks}}
+    <tr>
+        <td>{{.Task}}</td>
+        <td class="task-status">{{.Status}}</td>
+        <td>
+            <button class="btn" onclick="openModal('updateTaskStatusModal', '{{.Task}}', '{{.Status}}')">Update Status</button>
+            <button class="btn btn-delete" onclick="deleteRequest('{{.Task}}','')">Delete</button>
+        </td>
+    </tr>
+    {{else}}
+    <tr>
+        <td colspan="3">No tasks available</td>
+    </tr>
+    {{end}}
+    </tbody>
+</table>
+
+<!-- Create Task Modal -->
+<div id="createTaskModal" class="modal">
+    <div class="modal-content">
+        <h2>Create New Task</h2>
+        <form id="createTaskForm">
+            <input type="hidden" name="action" value="create">
+            <label for="newTask">Task:</label>
+            <input type="text" id="newTask" name="task" required><br><br>
+            <label for="newStatus">Status:</label>
+            <select id="newStatus" name="status" required>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Blocked">Blocked</option>
+                <option value="Done">Done</option>
+            </select><br><br>
+            <button type="submit" class="btn">Create Task</button>
+            <button type="button" class="btn" onclick="closeModal('createTaskModal')">Close</button>
+        </form>
+    </div>
+</div>
+
+<!-- Filter by Status Modal -->
+<div id="filterModal" class="modal">
+    <div class="modal-content">
+        <h2>Filter by Status</h2>
+        <form id="statusFilterForm">
+            <input type="hidden" name="action" value="read">
+            <input type="hidden" name="task" value="all">
+            <label for="filterStatus">Select Status:</label>
+            <select id="filterStatus" name="status" required>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Blocked">Blocked</option>
+                <option value="Done">Done</option>
+                <option value="all">All</option>
+            </select>
+            <button type="submit" class="btn">Filter</button>
+            <button type="button" class="btn" onclick="closeModal('filterModal')">Close</button>
+        </form>
+    </div>
+</div>
+
+<!-- Update Task Status Modal -->
+<div id="updateTaskStatusModal" class="modal">
+    <div class="modal-content">
+        <h2 id="updateTaskStatus">Update Task Status</h2>
+        <form id="updateTaskForm">
+            <input type="hidden" name="action" value="update">
+            <input type="hidden" id="taskToUpdate" name="task" value="">
+            <label for="updateStatus">Status:</label>
+            <select id="updateStatus" name="status" required>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Blocked">Blocked</option>
+                <option value="Done">Done</option>
+            </select><br><br>
+            <button type="submit" class="btn">Update Status</button>
+            <button type="button" class="btn" onclick="closeModal('updateTaskStatusModal')">Close</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Set the filter, initially to "all"
+    let currentFilter = 'all';
+
+    // Refresh task list when submitting filter form
+    document.getElementById('statusFilterForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const status = formData.get('status');
+
+        refreshTaskList(status); // TODO Maybe wrap in a promise for error handling
+        refreshFilters(status);
+        closeModal('filterModal');
+    });
+
+    // Send POST request to /api when submitting create task form then view all
+    document.getElementById("createTaskForm").addEventListener('submit', function(event){
+        event.preventDefault();
+        const formData = new FormData(event.target)
+        const crudRequest = Object.fromEntries(formData)
+
+        fetch('/api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify(crudRequest)
+        })
+            .then(response => {
+                closeModal('createTaskModal');
+                refreshTaskList("all"); // TODO Retain filters - don't pass "all" here
+                refreshFilters("all");
+            })
+            .catch(error => console.error('Error:', error))
+    })
+
+    // Send PUT request to /api when submitting update task form then view all
+    document.getElementById("updateTaskForm").addEventListener('submit', function(event){
+        event.preventDefault();
+        const formData = new FormData(event.target)
+        const crudRequest = Object.fromEntries(formData)
+
+        fetch('/api', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify(crudRequest)
+        })
+            .then(response => {
+                closeModal('updateTaskStatusModal');
+                refreshTaskList("all");
+                refreshFilters("all");
+            })
+            .catch(error => console.error('Error:', error))
+    })
+
+    // Send DELETE request when hitting a delete button
+    function deleteRequest(task,status){
+        fetch('/api', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'delete', task: task, status: status})
+        })
+            .then(response => {
+                refreshTaskList("all");
+                refreshFilters("all");
+            })
+            .catch(error => console.error('Error:', error))
+    }
+    function deleteAll() {
+        deleteRequest("all",currentFilter)
+    }
+
+    // Function for dynamic task refresh
+    function refreshTaskList(status) {
+        fetch(`/api?status=${status}`)
+            .then(response => response.json())
+            .then(tasks => {
+                const taskList = document.getElementById('taskList');
+                taskList.innerHTML = '';
+                if (tasks.length > 0) {
+                    tasks.forEach(t => {
+                        const row = `<tr>
+                            <td>${t.task}</td>
+                            <td class="task-status">${t.status}</td>
+                            <td>
+                                <button class="btn" onclick="openModal('updateTaskStatusModal', '${t.task}', '${t.status}')">Update Status</button>
+                                <button class="btn btn-delete" onclick="deleteRequest('${t.task}')">Delete</button>
+                            </td>
+                        </tr>`;
+                        taskList.innerHTML += row;
+                    });
+                } else {
+                    taskList.innerHTML = '<tr><td colspan="3">No tasks available</td></tr>';
+                }
+
+                // Update Filter and FilterString based on active status filter
+                const filterStringElements = document.querySelectorAll('.filter-string');
+                filterStringElements.forEach(el => {
+                    el.textContent = (status === 'all') ? ' ' : ` ${status} `;
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Function for dynamic filter refresh
+    function refreshFilters(status) {
+        // Update filter and usage across the page
+        currentFilter = status;
+        const filterString = currentFilter == "all" ? ' ' : ` "${currentFilter}" `; // TODO Investigate this warning?
+
+        const filterTitle = document.getElementById('filterTitle')
+        filterTitle.textContent = `This is the franz to do lis(z)t app! Showing all${filterString}tasks.`
+
+        const deleteAllButton = document.getElementById('deleteAllButton')
+        deleteAllButton.textContent = `Delete all${filterString}Tasks`
+    }
+
+    function openModal(modalId, task = '', status = '') {
+        document.getElementById(modalId).style.display = 'block';
+
+        if (modalId === 'updateTaskStatusModal') {
+            // Set the task and status to current
+            document.getElementById('updateTaskStatus').textContent = `Update "${task}" Status`;
+            document.getElementById('taskToUpdate').value = task;
+            document.getElementById('updateStatus').value = status;
+        }
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+</script>
+</body>
+</html>

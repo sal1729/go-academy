@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+// TODO Force status and task to always be defined? status="" is annoying
+
 // ValidateCrudRequest might be a bit out of data now
 func ValidateCrudRequest(req CrudRequest) error {
 	action := req.Action
@@ -71,7 +73,7 @@ func ReadFromList(todoList *[]ListItem, req CrudRequest) ([]ListItem, error) {
 	}
 	fmt.Printf("Reading task %s, status %s\n", taskname, statusString)
 
-	if taskname == "all" && status == "" {
+	if taskname == "all" && (status == "" || status == "all") {
 		return *todoList, nil
 	}
 	if taskname == "all" { // && status != "", implicitly
@@ -141,8 +143,8 @@ func DeleteFromList(todoList *[]ListItem, req CrudRequest) ([]ListItem, error) {
 	for i := 0; i < len(*todoList); {
 		entry := (*todoList)[i]
 		// Conditions for deletion
-		if (task == "all" && status == "") ||
-			(task == "all" && status != "" && entry.Status == status) ||
+		if (task == "all" && (status == "" || status == "all")) ||
+			(task == "all" && !(status == "" || status == "all") && entry.Status == status) ||
 			(task != "all" && entry.Task == task) {
 			deletions = append(deletions, entry)
 			// Remove the entry by swapping with the last element and slicing off the last item
