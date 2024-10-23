@@ -6,9 +6,15 @@ To run do `go run .`
 Then to test the request types
 
 ### **GET** (read)
-- all: `curl -X GET http://localhost:8080/api`
-- by status: `curl -X GET "http://localhost:8080/api?status=To%20Do"`
-- by task wasn't implemented in the api
+All:
+```shell
+curl -X GET http://localhost:8080/api
+```
+By status: 
+```shell
+curl -X GET "http://localhost:8080/api?status=To%20Do"
+```
+> By task wasn't implemented in the api
 
 ### **POST** (create)
 ```shell
@@ -37,4 +43,10 @@ By status:
 curl -X DELETE http://localhost:8080/api \
   -H "Content-Type: application/json" \
   -d '{"action": "delete", "task": "all", "status": "To Do"}'
+```
+All:
+```shell
+curl -X DELETE http://localhost:8080/api \
+  -H "Content-Type: application/json" \
+  -d '{"action": "delete", "task": "all", "status": ""}'
 ```
