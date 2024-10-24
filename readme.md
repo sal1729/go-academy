@@ -2,6 +2,10 @@
 
 The to-do app "franz" lives in `franz-fingers`. An earlier, more object-orient-y, less client-side-javascript-y version lives in `todo-app-web`, but you'll need to checkout `main` for that.
 
+## Running the app
+To run the web app, first ensure the `datastore` constant is set correctly for you. That is, update line 13 of `franz-brain/readWriteFunctions.go`.
+Then run `go run .` from `franz-fingers/franz-web`.
+
 ## File Structure
 - `franz-brain` contains the crud operations for manipulating an in-memory list + some read/write stuff for persisting the list to a json file.
 Also the data file, and the api handler (maybe misplaced tbh).
