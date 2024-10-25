@@ -35,7 +35,10 @@ func ValidateCrudRequest(req CrudRequest) error {
 }
 
 // CreateTask errors if task already exists
-func CreateTask(todoList *[]ListItem, req CrudRequest) ([]ListItem, error) {
+func CreateTask(store *TodoListStore, req CrudRequest) ([]ListItem, error) {
+	store.Mu.Lock()
+	defer store.Mu.Unlock()
+
 	err := ValidateCrudRequest(req)
 	if err != nil {
 		return []ListItem{}, err
@@ -46,19 +49,22 @@ func CreateTask(todoList *[]ListItem, req CrudRequest) ([]ListItem, error) {
 	fmt.Printf("Creating task %s, status %s\n", task, status)
 	newEntry := ListItem{}
 
-	if taskExists(*todoList, task) {
+	if taskExists(store.TodoList, task) {
 		return []ListItem{newEntry}, fmt.Errorf("cannot create - task %s already exists", task)
 	}
 
 	// Create task, modify data in memory, return
 	newEntry.Task = task
 	newEntry.Status = status
-	*todoList = append(*todoList, newEntry)
+	store.TodoList = append(store.TodoList, newEntry)
 	return []ListItem{newEntry}, nil
 }
 
 // ReadFromList does not error if no such task is found.
-func ReadFromList(todoList *[]ListItem, req CrudRequest) ([]ListItem, error) {
+func ReadFromList(store *TodoListStore, req CrudRequest) ([]ListItem, error) {
+	store.Mu.RLock()
+	defer store.Mu.RUnlock()
+
 	err := ValidateCrudRequest(req)
 	if err != nil {
 		return []ListItem{}, err
@@ -74,20 +80,20 @@ func ReadFromList(todoList *[]ListItem, req CrudRequest) ([]ListItem, error) {
 	fmt.Printf("Reading task %s, status %s\n", taskname, statusString)
 
 	if taskname == "all" && (status == "" || status == "all") {
-		return *todoList, nil
+		return store.TodoList, nil
 	}
 	if taskname == "all" { // && status != "", implicitly
-		return filterByStatus(*todoList, status), nil
+		return filterByStatus(store.TodoList, status), nil
 	}
 
 	// Implicitly, if task != "all"
-	task, _ := getTaskByName(*todoList, taskname)
+	task, _ := getTaskByName(store.TodoList, taskname)
 	return []ListItem{task}, nil
 }
 
 // UpdateListItems errors if there is something wrong with the request
 // but it doesn't error if it can't find a task to update
-func UpdateListItems(todoList *[]ListItem, req CrudRequest) ([]ListItem, error) {
+func UpdateListItems(store *TodoListStore, req CrudRequest) ([]ListItem, error) {
 	err := ValidateCrudRequest(req)
 	if err != nil {
 		return []ListItem{}, err
@@ -98,19 +104,19 @@ func UpdateListItems(todoList *[]ListItem, req CrudRequest) ([]ListItem, error) 
 	fmt.Printf("Updating task %s, status %s\n", task, status)
 	var updates []ListItem
 
-	for i := range *todoList {
+	for i := range store.TodoList {
 		if task == "all" {
 			currentStatus, newStatus, statusErr := decomposeStatusString(status)
 			if statusErr != nil {
 				return updates, statusErr
 			}
-			if (*todoList)[i].Status == currentStatus {
-				(*todoList)[i].Status = newStatus
-				updates = append(updates, (*todoList)[i])
+			if (store.TodoList)[i].Status == currentStatus {
+				(store.TodoList)[i].Status = newStatus
+				updates = append(updates, (store.TodoList)[i])
 			}
-		} else if (*todoList)[i].Task == task {
-			(*todoList)[i].Status = status
-			updates = append(updates, (*todoList)[i])
+		} else if (store.TodoList)[i].Task == task {
+			(store.TodoList)[i].Status = status
+			updates = append(updates, (store.TodoList)[i])
 			break // Here we assume task name is unique
 		}
 	}
@@ -119,7 +125,10 @@ func UpdateListItems(todoList *[]ListItem, req CrudRequest) ([]ListItem, error) 
 }
 
 // DeleteFromList does not throw errors, even if the requested task does not exist
-func DeleteFromList(todoList *[]ListItem, req CrudRequest) ([]ListItem, error) {
+func DeleteFromList(store *TodoListStore, req CrudRequest) ([]ListItem, error) {
+	store.Mu.Lock()
+	defer store.Mu.Unlock()
+
 	err := ValidateCrudRequest(req)
 	if err != nil {
 		return []ListItem{}, err
@@ -140,8 +149,8 @@ func DeleteFromList(todoList *[]ListItem, req CrudRequest) ([]ListItem, error) {
 	var deletions []ListItem
 
 	// Use a single pass to filter entries in-place.
-	for i := 0; i < len(*todoList); {
-		entry := (*todoList)[i]
+	for i := 0; i < len(store.TodoList); {
+		entry := (store.TodoList)[i]
 		// Conditions for deletion
 		if (task == "all" && (status == "" || status == "all")) ||
 			(task == "all" && !(status == "" || status == "all") && entry.Status == status) ||
@@ -149,8 +158,8 @@ func DeleteFromList(todoList *[]ListItem, req CrudRequest) ([]ListItem, error) {
 			deletions = append(deletions, entry)
 			// Remove the entry by swapping with the last element and slicing off the last item
 			// Gotta confess, this was pure ChatGPT but it's pretty nifty
-			(*todoList)[i] = (*todoList)[len(*todoList)-1]
-			*todoList = (*todoList)[:len(*todoList)-1]
+			(store.TodoList)[i] = (store.TodoList)[len(store.TodoList)-1]
+			store.TodoList = (store.TodoList)[:len(store.TodoList)-1]
 		} else {
 			i++ // Move to the next item only if no deletion happened - if there was deletion there's a new entry to check in slot i
 		}
