@@ -7,6 +7,7 @@ import (
 	"fmt"
 	franz "franz_brain"
 	"log"
+	"sync"
 )
 
 var accessMethod = "raw" // Or change this to "goroutine"
@@ -43,8 +44,13 @@ func main() {
 		todoList, err := franz.GetData()
 		catchError(err)
 
+		store := franz.TodoListStore{
+			TodoList: todoList,
+			Mu:       sync.RWMutex{},
+		}
+
 		// Handle request
-		err = handleRequest(&todoList, request)
+		err = handleRequest(&store, request)
 		catchError(err)
 
 		// Persist data
@@ -95,29 +101,29 @@ func main() {
 
 }
 
-func handleRequest(todoList *[]franz.ListItem, req franz.CrudRequest) error {
+func handleRequest(store *franz.TodoListStore, req franz.CrudRequest) error {
 	// TODO Handle unhappy path where there was nothing to update/delete/list
 	switch req.Action {
 	case "create":
-		newEntry, createErr := franz.CreateTask(todoList, req)
+		newEntry, createErr := franz.CreateTask(store, req)
 		if createErr != nil {
 			return createErr
 		}
 		fmt.Println("Created entry:\n", newEntry)
 	case "read":
-		list, listErr := franz.ReadFromList(todoList, req)
+		list, listErr := franz.ReadFromList(store, req)
 		if listErr != nil {
 			return listErr
 		}
 		fmt.Println("Listing entries:", list)
 	case "update":
-		updates, updateErr := franz.UpdateListItems(todoList, req)
+		updates, updateErr := franz.UpdateListItems(store, req)
 		if updateErr != nil {
 			return updateErr
 		}
 		fmt.Println("Updated entries:", updates)
 	case "delete":
-		deletions, deleteErr := franz.DeleteFromList(todoList, req)
+		deletions, deleteErr := franz.DeleteFromList(store, req)
 		if deleteErr != nil {
 			return deleteErr
 		}

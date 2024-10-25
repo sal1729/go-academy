@@ -3,6 +3,7 @@ package franz
 import (
 	"errors"
 	"fmt"
+	"sync"
 )
 
 type SuccessResponse struct {
@@ -22,12 +23,17 @@ func Datastore(requests <-chan AccessRequest) {
 		panic(err)
 	}
 
+	todoStore := TodoListStore{
+		TodoList: todoList,
+		Mu:       sync.RWMutex{},
+	}
+
 	for req := range requests {
 		c := req.CrudRequest
 		// This is an adaptation of the cli tool handleRequest function
 		switch c.Action {
 		case "create":
-			newEntry, err := CreateTask(&todoList, c)
+			newEntry, err := CreateTask(&todoStore, c)
 			if err != nil {
 				req.ActionSuccess <- SuccessResponse{Success: false, Error: err}
 				break
@@ -41,7 +47,7 @@ func Datastore(requests <-chan AccessRequest) {
 			fmt.Println("Created entry:\n", newEntry)
 			req.ActionSuccess <- SuccessResponse{Success: true, Error: nil}
 		case "read":
-			list, err := ReadFromList(&todoList, c)
+			list, err := ReadFromList(&todoStore, c)
 			if err != nil {
 				req.ActionSuccess <- SuccessResponse{Success: false, Error: err}
 				break
@@ -51,7 +57,7 @@ func Datastore(requests <-chan AccessRequest) {
 			req.ActionSuccess <- SuccessResponse{Success: true, Error: nil}
 			req.Result <- list
 		case "update":
-			updates, err := UpdateListItems(&todoList, c)
+			updates, err := UpdateListItems(&todoStore, c)
 			if err != nil {
 				req.ActionSuccess <- SuccessResponse{Success: false, Error: err}
 				break
@@ -65,7 +71,7 @@ func Datastore(requests <-chan AccessRequest) {
 			fmt.Println("Updated entries:", updates)
 			req.ActionSuccess <- SuccessResponse{Success: true, Error: nil}
 		case "delete":
-			deletions, err := DeleteFromList(&todoList, c)
+			deletions, err := DeleteFromList(&todoStore, c)
 			if err != nil {
 				req.ActionSuccess <- SuccessResponse{Success: false, Error: err}
 				break
